@@ -1,16 +1,24 @@
-import React, { Component } from 'react'
-import { Button } from 'antd'
+import React from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { WelcomeScreen } from './screens/WelcomeScreen'
 
-import './App.css'
+export default class App extends React.Component {
+  private renderIndexRoute = () => {
+    const loggedIn = localStorage.getItem('loggedIn')
+    if (!loggedIn) {
+      return <WelcomeScreen/>
+    } else {
+      return <h1>{loggedIn}</h1>
+    }
+  }
 
-class App extends Component {
   render() {
     return (
-      <div className="App">
-        <Button type="primary">Learn React</Button>
-      </div>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" render={this.renderIndexRoute}/>
+        </Switch>
+      </BrowserRouter>
     )
   }
 }
-
-export default App
