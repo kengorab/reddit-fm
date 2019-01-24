@@ -43,3 +43,16 @@ interface PlaylistsResponse {
   items: Playlist[],
   total: number,
 }
+
+interface SpotifyUser {
+  country: string,
+  display_name: string,
+  external_urls: any,
+  followers: any,
+  href: string,
+  id: string,
+  images: any[],
+  product: string,
+  type: string,
+  uri: string,
+}

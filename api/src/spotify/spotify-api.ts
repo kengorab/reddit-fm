@@ -11,6 +11,12 @@ export class SpotifyApi {
     }
   }
 
+  async getMe(): Promise<SpotifyUser> {
+    const url = `${this.baseUrl}/v1/me`
+    const res = await fetch(url, { headers: this.headers })
+    return res.json()
+  }
+
   async search(query: string): Promise<SearchResponse> {
     const q = encodeURIComponent(query)
     const url = `${this.baseUrl}/v1/search?type=track&market=US&limit=1&q=${q}`

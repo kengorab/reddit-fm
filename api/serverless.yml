@@ -17,6 +17,18 @@ functions:
       - http:
           method: get
           path: hello
+  spotify-login:
+    handler: src/handlers/auth.spotifyLogin
+    events:
+    - http:
+        method: get
+        path: spotify/login
+  spotify-verify:
+    handler: src/handlers/auth.spotifyVerify
+    events:
+    - http:
+        method: get
+        path: spotify/verify
 
 custom:
   serverless-offline:

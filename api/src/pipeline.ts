@@ -13,7 +13,7 @@ export class Pipeline {
   private readonly userPlaylistsPromise: Promise<PlaylistsResponse>
 
   constructor(private user: User) {
-    this.spotifyApi = new SpotifyApi(user.spotifyToken)
+    this.spotifyApi = new SpotifyApi(user.spotifyRefreshToken)
     this.userPlaylistsPromise = this.spotifyApi.getPlaylists()
   }
 

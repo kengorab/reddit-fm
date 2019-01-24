@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button, Layout } from 'antd'
 
-export function WelcomeScreen() {
+export default function WelcomeScreen() {
   return (
     <Layout>
       <Layout.Header>
@@ -32,7 +32,7 @@ export function WelcomeScreen() {
             and we won't do anything other than create and update some
             playlists. And you can turn this off at any time.
           </p>
-          <Button type="primary">
+          <Button type="primary" href="https://e113ebbc.ngrok.io/spotify/login">
             <i className="fab fa-spotify"/> &nbsp;
             Sign in to Spotify
           </Button>

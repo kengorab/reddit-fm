@@ -1,14 +1,16 @@
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { WelcomeScreen } from './screens/WelcomeScreen'
+import { BrowserRouter, Route, RouteComponentProps, Switch } from 'react-router-dom'
+import * as auth from './storage/auth'
+import WelcomeScreen from './screens/WelcomeScreen'
+import LoginScreen from './screens/LoginScreen'
+import HomeScreen from './screens/HomeScreen'
 
 export default class App extends React.Component {
-  private renderIndexRoute = () => {
-    const loggedIn = localStorage.getItem('loggedIn')
-    if (!loggedIn) {
+  private renderIndexRoute = (props: RouteComponentProps) => {
+    if (!auth.isLoggedIn()) {
       return <WelcomeScreen/>
     } else {
-      return <h1>{loggedIn}</h1>
+      return <HomeScreen {...props}/>
     }
   }
 
@@ -17,6 +19,7 @@ export default class App extends React.Component {
       <BrowserRouter>
         <Switch>
           <Route exact path="/" render={this.renderIndexRoute}/>
+          <Route exact path="/login/:uuid" component={LoginScreen}/>
         </Switch>
       </BrowserRouter>
     )
