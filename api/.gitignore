@@ -13,3 +13,4 @@ jspm_packages
 
 # Configuration
 .env
+.firebase-config.json

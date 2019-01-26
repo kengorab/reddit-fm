@@ -13,3 +13,11 @@
 @disabled-color: rgba(255, 255, 255, .25);
 
 @font-size-base: 16px;
+
+// This isn't great, but when I changed the error-color value, the other colors which
+// are based on it don't update. If I ever use any other error-color-dependent colors,
+// I'll need to add them here too.
+@error-color: #C14C43;
+@alert-error-border-color: darken(@error-color, 3);
+@alert-error-bg-color: darken(@error-color, 1);
+@alert-error-icon-color: @heading-color;

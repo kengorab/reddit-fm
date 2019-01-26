@@ -8,7 +8,7 @@ import HomeScreen from './screens/HomeScreen'
 export default class App extends React.Component {
   private renderIndexRoute = (props: RouteComponentProps) => {
     if (!auth.isLoggedIn()) {
-      return <WelcomeScreen/>
+      return <WelcomeScreen {...props} />
     } else {
       return <HomeScreen {...props}/>
     }

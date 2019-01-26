@@ -1,7 +1,13 @@
 import * as React from 'react'
-import { Button, Layout } from 'antd'
+import { Alert, Button, Layout } from 'antd'
+import { RouteComponentProps } from 'react-router'
 
-export default function WelcomeScreen() {
+type Props = RouteComponentProps
+
+export default function WelcomeScreen(props: Props) {
+  const query = new URLSearchParams(props.location.search)
+  const isError = query.has('e')
+
   return (
     <Layout>
       <Layout.Header>
@@ -32,7 +38,16 @@ export default function WelcomeScreen() {
             and we won't do anything other than create and update some
             playlists. And you can turn this off at any time.
           </p>
-          <Button type="primary" href="https://e113ebbc.ngrok.io/spotify/login">
+          {isError && (
+            <Alert
+              style={{ marginBottom: 12 }}
+              message="Something went wrong..."
+              description="There was an issue signing you into Spotify. Please try again in a little bit"
+              type="error"
+              showIcon
+            />
+          )}
+          <Button type="primary" href="https://25c11774.ngrok.io/spotify/login">
             <i className="fab fa-spotify"/> &nbsp;
             Sign in to Spotify
           </Button>
