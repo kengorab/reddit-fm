@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Alert, Button, Layout } from 'antd'
 import { RouteComponentProps } from 'react-router'
+import { backendBase } from '../env'
 
 type Props = RouteComponentProps
 
@@ -47,7 +48,7 @@ export default function WelcomeScreen(props: Props) {
               showIcon
             />
           )}
-          <Button type="primary" href="https://25c11774.ngrok.io/spotify/login">
+          <Button type="primary" href={`${backendBase}/spotify/login`}>
             <i className="fab fa-spotify"/> &nbsp;
             Sign in to Spotify
           </Button>

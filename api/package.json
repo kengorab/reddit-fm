@@ -1,10 +1,13 @@
 {
-  "name": "redditify-api",
+  "name": "reddit-fm-api",
   "version": "1.0.0",
-  "description": "Serverless webpack example using Typescript",
-  "main": "handler.js",
+  "private": true,
+  "author": "Ken Gorab (ken.gorab@gmail.com)",
+  "license": "MIT",
   "scripts": {
-    "dev": "sls offline"
+    "dev": "sls offline",
+    "deploy:dev": "NODE_ENV=dev sls deploy --stage dev",
+    "deploy:prod": "NODE_ENV=prod sls deploy --stage prod"
   },
   "dependencies": {
     "aws-sdk": "^2.393.0",
@@ -18,13 +21,12 @@
     "@types/isomorphic-fetch": "0.0.34",
     "@types/lodash": "^4.14.120",
     "@types/node": "^8.0.57",
+    "serverless-dotenv-plugin": "^2.0.1",
     "serverless-offline": "^4.1.4",
     "serverless-webpack": "^5.1.1",
     "source-map-support": "^0.5.6",
     "ts-loader": "^4.2.0",
     "typescript": "^2.9.2",
     "webpack": "^4.5.0"
-  },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
-  "license": "MIT"
+  }
 }
