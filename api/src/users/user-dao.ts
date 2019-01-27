@@ -42,3 +42,13 @@ export async function getUserBySpotifyId(userSpotifyId: string): Promise<User | 
   }
   return result.Items[0] as User
 }
+
+export async function getUserById(id: string): Promise<User | null> {
+  return {
+    id: id,
+    spotifyDisplayName: 'Ken',
+    spotifyId: 'zklxjcvnlk',
+    spotifyRefreshToken: 'zixuchvokjlwer',
+    playlistConfigs: []
+  }
+}

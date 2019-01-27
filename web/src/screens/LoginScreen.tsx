@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
-import * as auth from '../storage/auth'
+import * as auth from '../data/auth'
 
 type Props = RouteComponentProps<{ uuid: string }>
 

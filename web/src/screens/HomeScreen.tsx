@@ -1,27 +1,22 @@
 import * as React from 'react'
-import { Button, Layout } from 'antd'
-import { RouteComponentProps } from 'react-router'
-import * as auth from '../storage/auth'
+import { Icon } from 'antd'
+import { ZoomingButtonLink } from '../components/ZoomingButtonLink'
 
-type Props = RouteComponentProps
+type Props = { user: User }
 
 export default function HomeScreen(props: Props) {
   return (
-    <Layout>
-      <Layout.Header className="hflex-space-betw">
-        <h2 style={{ margin: 0 }}>Reddit FM</h2>
-        <Button ghost onClick={() => {
-          auth.logOut()
-          props.history.replace('/')
-        }}>
-          Log out
-        </Button>
-      </Layout.Header>
-      <Layout.Content>
-        <main>
-          <h1>Logged in!</h1>
-        </main>
-      </Layout.Content>
-    </Layout>
+    <>
+      <h1>Your Curated Playlists</h1>
+      {props.user.playlistConfigs.length === 0 && (
+        <p>
+          It looks like you don't have any curated playlists set up!<br/>
+          Let's try making one! Click the button below
+        </p>
+      )}
+      <ZoomingButtonLink to="/playlists/new">
+        <Icon type="plus"/> Create New Playlist
+      </ZoomingButtonLink>
+    </>
   )
 }
