@@ -22,6 +22,8 @@ export default class App extends React.Component<{}, State> {
     this.setState({ user, loading: false })
   }
 
+  private updateUser = (user: User) => this.setState({ user })
+
   private renderContent = () => {
     if (this.state.loading) {
       return (
@@ -34,7 +36,11 @@ export default class App extends React.Component<{}, State> {
     return (
       <Switch>
         <Route exact path="/" render={() => <HomeScreen user={this.state.user!}/>}/>
-        <Route exact path="/playlists/new" component={CreatePlaylistScreen}/>
+        <Route
+          exact
+          path="/playlists/new"
+          render={(props) => <CreatePlaylistScreen {...props} onUpdateUser={this.updateUser}/>}
+        />
       </Switch>
     )
   }

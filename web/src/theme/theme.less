@@ -17,7 +17,18 @@
 // This isn't great, but when I changed the error-color value, the other colors which
 // are based on it don't update. If I ever use any other error-color-dependent colors,
 // I'll need to add them here too.
-@error-color: #C14C43;
+@error-color: @warning-color;//#C14C43;
 @alert-error-border-color: darken(@error-color, 3);
 @alert-error-bg-color: darken(@error-color, 1);
 @alert-error-icon-color: @heading-color;
+
+@component-background: @layout-header-background;
+@background-color-light: lighten(@layout-header-background, 8);
+@border-color-base: @text-color-secondary;
+@border-color-split: @layout-body-background;
+@input-bg: @layout-header-background;
+@input-placeholder-color: @text-color-secondary;
+@item-hover-bg: darken(@primary-color, 3);
+@item-active-bg: @primary-color;
+@tag-default-bg: @primary-color;
+@tag-default-color: @text-color;

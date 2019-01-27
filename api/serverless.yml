@@ -39,6 +39,16 @@ functions:
           parameters:
             paths:
               uuid: true
+  create-playlist:
+    handler: src/handlers/users.createPlaylist
+    events:
+    - http:
+        method: post
+        path: users/{uuid}/playlists
+        request:
+          parameters:
+            paths:
+              uuid: true
   spotify-login:
     handler: src/handlers/auth.spotifyLogin
     events:

@@ -29,6 +29,11 @@ export async function saveUser(
   return user
 }
 
+export async function updateUser(user: User): Promise<User> {
+  await db.put({ TableName, Item: user }).promise()
+  return user
+}
+
 export async function getUserBySpotifyId(userSpotifyId: string): Promise<User | null> {
   const result = await db.scan({
     TableName,
@@ -44,11 +49,6 @@ export async function getUserBySpotifyId(userSpotifyId: string): Promise<User | 
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  return {
-    id: id,
-    spotifyDisplayName: 'Ken',
-    spotifyId: 'zklxjcvnlk',
-    spotifyRefreshToken: 'zixuchvokjlwer',
-    playlistConfigs: []
-  }
+  const result = await db.get({ TableName, Key: { id } }).promise()
+  return result.Item as User
 }
