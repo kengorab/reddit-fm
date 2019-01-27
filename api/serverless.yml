@@ -33,6 +33,7 @@ functions:
     handler: src/handlers/users.getUser
     events:
     - http:
+        cors: true
         method: get
         path: users/{uuid}
         request:
@@ -43,6 +44,7 @@ functions:
     handler: src/handlers/users.createPlaylist
     events:
     - http:
+        cors: true
         method: post
         path: users/{uuid}/playlists
         request:

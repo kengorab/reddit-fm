@@ -2,9 +2,10 @@ import { APIGatewayProxyHandler } from 'aws-lambda'
 import * as UserApi from '../users/user-dao'
 import * as RedditApi from '../reddit/reddit-api'
 import * as _ from 'lodash'
+import { withCors } from '../utils/cors'
 
 // GET /users/:uuid
-export const getUser: APIGatewayProxyHandler = async event => {
+export const getUser: APIGatewayProxyHandler = withCors(async event => {
   const { uuid } = event.pathParameters
   if (!uuid) {
     return {
@@ -27,10 +28,10 @@ export const getUser: APIGatewayProxyHandler = async event => {
     statusCode: 200,
     body: JSON.stringify(secureUser)
   }
-}
+})
 
 // POST /users/:uuid/playlists
-export const createPlaylist: APIGatewayProxyHandler = async event => {
+export const createPlaylist: APIGatewayProxyHandler = withCors(async event => {
   const { uuid } = event.pathParameters
   if (!uuid) {
     return {
@@ -84,4 +85,4 @@ export const createPlaylist: APIGatewayProxyHandler = async event => {
       user: secureUpdatedUser
     })
   }
-}
+})
