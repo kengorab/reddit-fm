@@ -14,8 +14,9 @@ if (env !== 'dev' && env !== 'prod') {
   process.exit(1)
 }
 
-const s3BucketPrefix = process.env.S3_BUCKET_PREFIX
-const bucketName = `${s3BucketPrefix}-${env}`
+const bucketName = env === 'dev'
+  ? process.env.S3_BUCKET_NAME_DEV
+  : process.env.S3_BUCKET_NAME_PROD
 
 async function main() {
   const buckets = await s3.listBuckets().promise()
