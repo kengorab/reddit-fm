@@ -22,3 +22,19 @@ export async function createPlaylist(playlist: PlaylistConfig): Promise<CreatePl
   })
   return res.json()
 }
+
+export async function setPlaylistStatus(
+  playlistId: string,
+  status: boolean
+): Promise<PlaylistConfig> {
+  const method = status ? 'POST' : 'DELETE'
+
+  const userId = auth.getUserId()
+  const url = `${backendBase}/users/${userId}/playlists/${playlistId}/status`
+
+  const res = await fetch(url, {
+    method,
+    body: ''
+  })
+  return res.json()
+}

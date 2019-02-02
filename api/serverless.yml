@@ -51,6 +51,30 @@ functions:
           parameters:
             paths:
               uuid: true
+  enable-playlist:
+    handler: src/handlers/users.enablePlaylist
+    events:
+    - http:
+        cors: true
+        method: post
+        path: users/{userId}/playlists/{playlistId}/status
+        request:
+          parameters:
+            paths:
+              userId: true
+              playlistId: true
+  disable-playlist:
+    handler: src/handlers/users.disablePlaylist
+    events:
+    - http:
+        cors: true
+        method: delete
+        path: users/{userId}/playlists/{playlistId}/status
+        request:
+          parameters:
+            paths:
+              userId: true
+              playlistId: true
   spotify-login:
     handler: src/handlers/auth.spotifyLogin
     events:

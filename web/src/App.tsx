@@ -35,7 +35,7 @@ export default class App extends React.Component<{}, State> {
 
     return (
       <Switch>
-        <Route exact path="/" render={() => <HomeScreen user={this.state.user!}/>}/>
+        <Route exact path="/" render={() => <HomeScreen user={this.state.user!} onUpdateUser={this.updateUser}/>}/>
         <Route
           exact
           path="/playlists/new"
