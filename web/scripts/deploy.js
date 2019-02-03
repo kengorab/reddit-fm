@@ -55,8 +55,12 @@ async function main() {
         Bucket: bucketName,
         Key: key,
         Body: await promisify(fs.readFile)(file, { encoding: 'utf-8' }),
-        ContentType: mime.lookup(key) || 'text/plain'
+        ContentType: mime.lookup(key) || 'text/plain',
       }
+      if (key === 'index.html') {
+        params.CacheControl = 'max-age=0'
+      }
+
       await s3.upload(params).promise()
       console.log(`Uploaded ${key}`)
     } catch (e) {
