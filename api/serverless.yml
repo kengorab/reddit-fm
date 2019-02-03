@@ -35,22 +35,22 @@ functions:
     - http:
         cors: true
         method: get
-        path: users/{uuid}
+        path: users/{userId}
         request:
           parameters:
             paths:
-              uuid: true
+              userId: true
   create-playlist:
     handler: src/handlers/users.createPlaylist
     events:
     - http:
         cors: true
         method: post
-        path: users/{uuid}/playlists
+        path: users/{userId}/playlists
         request:
           parameters:
             paths:
-              uuid: true
+              userId: true
   enable-playlist:
     handler: src/handlers/users.enablePlaylist
     events:

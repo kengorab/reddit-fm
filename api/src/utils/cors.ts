@@ -6,6 +6,7 @@ export function cors(res: APIGatewayProxyResult): APIGatewayProxyResult {
     headers: {
       ...res.headers,
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD',
       'Access-Control-Allow-Credentials': true
     }
   }

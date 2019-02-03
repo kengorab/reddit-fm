@@ -5,21 +5,21 @@ import * as UserApi from '../users/user-dao'
 import * as RedditApi from '../reddit/reddit-api'
 import { withCors } from '../utils/cors'
 
-// GET /users/:uuid
+// GET /users/:userId
 export const getUser: APIGatewayProxyHandler = withCors(async event => {
-  const { uuid } = event.pathParameters
-  if (!uuid) {
+  const { userId } = event.pathParameters
+  if (!userId) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: 'Missing required path param: uuid' })
     }
   }
 
-  const user = await UserApi.getUserById(uuid)
+  const user = await UserApi.getUserById(userId)
   if (!user) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ message: `No user present with uuid ${uuid}` })
+      body: JSON.stringify({ message: `No user present with id ${userId}` })
     }
   }
 
@@ -31,10 +31,10 @@ export const getUser: APIGatewayProxyHandler = withCors(async event => {
   }
 })
 
-// POST /users/:uuid/playlists
+// POST /users/:userId/playlists
 export const createPlaylist: APIGatewayProxyHandler = withCors(async event => {
-  const { uuid } = event.pathParameters
-  if (!uuid) {
+  const { userId } = event.pathParameters
+  if (!userId) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: 'Missing required path param: uuid' })
@@ -68,11 +68,11 @@ export const createPlaylist: APIGatewayProxyHandler = withCors(async event => {
     }
   }
 
-  const user = await UserApi.getUserById(uuid)
+  const user = await UserApi.getUserById(userId)
   if (!user) {
     return {
       statusCode: 404,
-      body: JSON.stringify({ message: `No user present with uuid ${uuid}` })
+      body: JSON.stringify({ message: `No user present with id ${userId}` })
     }
   }
 
