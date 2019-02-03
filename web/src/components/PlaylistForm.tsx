@@ -4,6 +4,7 @@ import * as _ from 'lodash'
 import { Button, Form, Input, Select } from 'antd'
 import { FormComponentProps } from 'antd/es/form'
 import musicSubreddits from '../data/music-subreddits'
+import styled from 'styled-components'
 
 interface FormProps extends FormComponentProps {
   onPreview: () => Promise<void>,
@@ -159,8 +160,8 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
 
         <h3>Options</h3>
 
-        <div style={{ display: 'flex' }}>
-          <Form.Item label="Update Interval" style={{ flex: 1, marginRight: 12 }}>
+        <HalfWidthFormItemContainer>
+          <HalfWidthFormItem label="Update Interval">
             {getFieldDecorator('updateInterval', { initialValue: 'weekly' })(
               <Select size="large">
                 <Select.Option value="daily">Daily</Select.Option>
@@ -170,16 +171,16 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
             <span style={{ fontSize: 14 }}>
               How often do you want new songs added to this playlist?
             </span>
-          </Form.Item>
-          <Form.Item label="Max To Add" style={{ flex: 1, marginLeft: 12 }}>
+          </HalfWidthFormItem>
+          <HalfWidthFormItem label="Max To Add">
             {getFieldDecorator('maxToAdd', { initialValue: 20 })(
               <Input type="number" size="large" placeholder="All"/>
             )}
             <span style={{ fontSize: 14 }}>
               You don't want your playlist to be flooded with more music than you can listen to
             </span>
-          </Form.Item>
-        </div>
+          </HalfWidthFormItem>
+        </HalfWidthFormItemContainer>
 
         <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
           {/*<Button type="ghost" size="large" style={{ marginRight: 12 }} onClick={this.onPreview}*/}
@@ -194,3 +195,27 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
     )
   }
 }
+
+const HalfWidthFormItem = styled(Form.Item)`
+  flex: 1;
+  
+  &:not(:last-child) {
+    margin-right: 12px;
+  }
+  
+  &:not(:first-child) {
+    margin-left: 12px;
+  }
+  
+  @media screen and (max-width: 800px) {
+    margin: 0 !important;
+  }
+`
+
+const HalfWidthFormItemContainer = styled.div`
+  display: flex;
+  
+  @media screen and (max-width: 800px) {
+    flex-direction: column;
+  }
+`

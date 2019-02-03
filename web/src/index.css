@@ -30,7 +30,20 @@ main {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 64px - 48px); /* Account for header, and top-padding */
-    max-width: 700px;
+    max-width: 900px;
     margin: 0 auto;
     padding-bottom: 48px;
+}
+
+@media screen and (max-width: 1200px) {
+    main {
+        max-width: 700px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    main {
+        max-width: 100%;
+        padding: 0 48px 48px;
+    }
 }

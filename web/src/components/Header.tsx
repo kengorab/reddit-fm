@@ -36,7 +36,7 @@ export default function Header({ user, history }: Props) {
     )
 
   return (
-    <Layout.Header className="hflex-space-betw">
+    <Layout.Header className="hflex-space-betw" style={{ position: 'fixed', width: '100%', zIndex: 2 }}>
       <h2 style={{ margin: 0 }}>Reddit FM</h2>
       {dropdown}
     </Layout.Header>

@@ -53,7 +53,7 @@ export default class App extends React.Component<{}, State> {
     return (
       <Layout>
         <Header user={this.state.user} history={props.history}/>
-        <Layout.Content>
+        <Layout.Content style={{ paddingTop: 64 }}>
           <main>
             {this.renderContent()}
           </main>
