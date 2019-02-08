@@ -75,6 +75,20 @@ functions:
             paths:
               userId: true
               playlistId: true
+  get-playlist-songs:
+    handler: src/handlers/pipeline.getSongsForPlaylist
+    events:
+    - http:
+        cors: true
+        method: get
+        path: users/{userId}/playlists/songs
+        request:
+          parameters:
+            paths:
+              userId: true
+            querystrings:
+              subreddits: true
+              maxToAdd: true
   spotify-login:
     handler: src/handlers/auth.spotifyLogin
     events:

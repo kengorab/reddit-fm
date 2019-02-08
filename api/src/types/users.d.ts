@@ -16,6 +16,7 @@ interface PlaylistConfig {
 interface User {
   id: string,
   spotifyRefreshToken: string,
+  spotifyAccessToken: string,
   spotifyId: string,
   spotifyDisplayName: string,
   playlistConfigs: PlaylistConfig[],

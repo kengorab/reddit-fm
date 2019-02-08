@@ -38,3 +38,17 @@ export async function setPlaylistStatus(
   })
   return res.json()
 }
+
+export async function getPlaylistSongs(
+  subreddits: string[],
+  maxToAdd: number
+): Promise<{ songs: Song[] }> {
+  const userId = auth.getUserId()
+  const url = `${backendBase}/users/${userId}/playlists/songs`
+  const query = Object.entries({ subreddits: subreddits.join(','), maxToAdd })
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v.toString())}`)
+    .join('&')
+
+  const res = await fetch(`${url}?${query}`)
+  return res.json()
+}

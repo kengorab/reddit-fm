@@ -3,6 +3,10 @@
 // the default ant design theme.
 @import "../../node_modules/antd/dist/antd";
 
+html {
+  background: @layout-header-background;
+}
+
 @primary-color: #1DA57A;
 @layout-body-background: #030607;
 @layout-header-background: #001529;
@@ -10,14 +14,16 @@
 @heading-color: rgba(255, 255, 255, .85);
 @text-color: rgba(255, 255, 255, .65);
 @text-color-secondary: rgba(255, 255, 255, .45);
-@disabled-color: rgba(255, 255, 255, .25);
+@disabled-color: @disabled-color-dark;
+@disabled-bg: @layout-header-background;
+@tooltip-bg: #6b756a;
 
 @font-size-base: 16px;
 
 // This isn't great, but when I changed the error-color value, the other colors which
 // are based on it don't update. If I ever use any other error-color-dependent colors,
 // I'll need to add them here too.
-@error-color: @warning-color;//#C14C43;
+@error-color: @warning-color; //#C14C43;
 @alert-error-border-color: darken(@error-color, 3);
 @alert-error-bg-color: darken(@error-color, 1);
 @alert-error-icon-color: @heading-color;

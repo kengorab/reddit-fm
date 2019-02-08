@@ -4,10 +4,12 @@ interface Track {
     id: string,
     name: string,
     release_date: string,
+    images: Array<{ height: number, width: number, url: string }>
   },
   artists: Array<{ id: string, name: string }>,
   name: string,
   uri: string,
+  external_urls: { spotify: string }
 }
 
 interface SearchResponse {

@@ -20,3 +20,15 @@ interface User {
   spotifyDisplayName: string,
   playlistConfigs: PlaylistConfig[],
 }
+
+// This is copied from the api's pipeline.ts
+interface Song {
+  id: string,
+  uri: string,
+  name: string,
+  album: string,
+  artist: string,
+  albumArt: string,
+  url: string
+}
+

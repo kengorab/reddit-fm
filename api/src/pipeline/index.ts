@@ -1,53 +1,74 @@
 import { flatten, shuffle, take } from 'lodash'
-import { SpotifyApi } from './spotify/spotify-api'
-import { getYoutubeVideos } from './reddit/reddit-manager'
-import * as RedditApi from './reddit/reddit-api'
+import { SpotifyApi } from '../spotify/spotify-api'
+import { getYoutubeVideos } from '../reddit/reddit-manager'
+import * as RedditApi from '../reddit/reddit-api'
+import * as UserApi from '../users/user-dao'
 
 interface Result {
   created: string[],
   totalAdded: number,
 }
 
+interface Song {
+  id: string,
+  uri: string,
+  name: string,
+  album: string,
+  artist: string,
+  albumArt: string,
+  url: string
+}
+
 export class Pipeline {
   private readonly spotifyApi: SpotifyApi
   private readonly userPlaylistsPromise: Promise<PlaylistsResponse>
+  private readonly initializePromise: Promise<void>
 
   constructor(private user: User) {
-    this.spotifyApi = new SpotifyApi(user.spotifyRefreshToken)
-    this.userPlaylistsPromise = this.spotifyApi.getPlaylists()
+    this.spotifyApi = new SpotifyApi(user.spotifyAccessToken, user.spotifyRefreshToken)
+    this.initializePromise = this.spotifyApi.initialize()
+      .then(async ({ accessToken, changed }) => {
+        if (changed) {
+          await UserApi.updateUser({ ...user, spotifyAccessToken: accessToken })
+        }
+      })
+    this.userPlaylistsPromise = this.initializePromise
+      .then(() => this.spotifyApi.getPlaylists())
   }
 
-  private getSongsForSubreddit = async (subreddit: string) => {
+  private getSongsForSubreddit = async (subreddit: string): Promise<Song[]> => {
     const posts = await RedditApi.getSubredditPosts(subreddit)
     const videos = getYoutubeVideos(posts)
 
     const songPromises = videos.map(async video => {
+      await this.initializePromise
       let res = await this.spotifyApi.search(cleanTitle(video.videoTitle))
 
       if (!res || !res.tracks || res.tracks.total === 0) {
         res = await this.spotifyApi.search(cleanTitle(video.title))
 
         if (!res || !res.tracks || res.tracks.total === 0) {
-          return ({ ...video, song: null })
+          return null
         }
       }
 
       const track = res.tracks.items[0]
-      const song = {
+      return {
         id: track.id,
         uri: track.uri,
         name: track.name,
         album: track.album.name,
-        artist: track.artists[0].name
+        artist: track.artists[0].name,
+        albumArt: track.album.images.sort((a, b) => b.height - a.height)[0].url,
+        url: track.external_urls.spotify
       }
-
-      return ({ ...video, song })
     })
 
-    return Promise.all(songPromises)
+    const songs = await Promise.all(songPromises)
+    return songs.filter(song => !!song)
   }
 
-  private addToSpotifyPlaylist = async ({ config, songs }) => {
+  private addToSpotifyPlaylist = async (config: PlaylistConfig, songs: Song[]) => {
     const playlists = await this.userPlaylistsPromise
     let playlist = playlists.items.find(playlist => playlist.name === config.name)
     let createdPlaylist = false
@@ -63,7 +84,7 @@ export class Pipeline {
     const existingUris = playlistTracks.map(track => track.uri)
 
     const uris = songs
-      .map(song => song.song.uri)
+      .map(song => song.uri)
       .filter(uri => !existingUris.includes(uri))
     await this.spotifyApi.addSongsToPlaylist(playlist, uris)
     return {
@@ -73,24 +94,32 @@ export class Pipeline {
     }
   }
 
+  public async getSongsForPlaylist(
+    subreddits: string[],
+    maxToAdd: number,
+    shuffleSongs: boolean = true
+  ): Promise<Song[]> {
+    const songsPromises = subreddits.map(this.getSongsForSubreddit)
+    const songs = await Promise.all(songsPromises)
+    const allSongs = flatten(songs)
+
+    const n = maxToAdd || allSongs.length
+    const maxAllowableSongs = take(allSongs, n)
+
+    return shuffleSongs ? shuffle(maxAllowableSongs) : maxAllowableSongs
+  }
+
   public async run(): Promise<Result> {
     const playlistsPromises = this.user.playlistConfigs
       .filter(shouldProcessPlaylistConfig)
       .map(async config => {
-        const songsPromises = config.subreddits.map(this.getSongsForSubreddit)
-        const songs = await Promise.all(songsPromises)
-        const allSongs = flatten(songs).filter(({ song }) => !!song)
-
-        const n = config.maxToAdd || allSongs.length
-        const maxAllowableSongs = take(allSongs, n)
-
-        return {
-          config,
-          songs: config.shuffle ? shuffle(maxAllowableSongs) : maxAllowableSongs
-        }
+        const songs = await this.getSongsForPlaylist(
+          config.subreddits,
+          config.maxToAdd,
+          config.shuffle
+        )
+        return await this.addToSpotifyPlaylist(config, songs)
       })
-      .map(promise => promise.then(this.addToSpotifyPlaylist)
-      )
 
     const results = await Promise.all(playlistsPromises)
     return results.reduce(

@@ -1,14 +1,48 @@
 import 'isomorphic-fetch'
+import * as env from '../env'
+import { encode } from '../utils/base64'
 
 export class SpotifyApi {
   private readonly baseUrl = 'https://api.spotify.com'
-  private readonly headers: any
 
-  constructor(private token: string) {
-    this.headers = {
+  constructor(private accessToken: string, private refreshToken: string) {
+
+  }
+
+  get headers() {
+    return {
       'Accept': 'application/json',
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${this.accessToken}`
     }
+  }
+
+  async initialize(): Promise<{ accessToken: string, changed: boolean }> {
+    const url = `${this.baseUrl}/v1/me`
+    const res = await fetch(url, { headers: this.headers })
+    if (!res.ok) {
+      console.log('Token expired, refreshing...')
+      this.accessToken = await this.handleTokenRefresh()
+      console.log('Token refreshed')
+      return { accessToken: this.accessToken, changed: true }
+    }
+
+    return { accessToken: this.accessToken, changed: false }
+  }
+
+  private async handleTokenRefresh() {
+    const url = 'https://accounts.spotify.com/api/token'
+    const body = `grant_type=refresh_token&refresh_token=${encodeURIComponent(this.refreshToken)}`
+    const auth = encode(env.spotifyClientId + ':' + env.spotifyClientSecret)
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${auth}`
+      },
+      body
+    })
+    const { access_token: accessToken } = await res.json()
+    return accessToken
   }
 
   async getMe(): Promise<SpotifyUser> {

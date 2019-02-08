@@ -78,7 +78,7 @@ export const spotifyVerify: APIGatewayProxyHandler = async event => {
     }
 
     const { access_token: accessToken, refresh_token: refreshToken } = json
-    const spotify = new SpotifyApi(accessToken)
+    const spotify = new SpotifyApi(accessToken, refreshToken)
     const spotifyUser = await spotify.getMe()
 
     // If this Spotify user has already created an account with us, don't create another
@@ -87,7 +87,12 @@ export const spotifyVerify: APIGatewayProxyHandler = async event => {
     if (storedUser) {
       uuid = storedUser.id
     } else {
-      const newUser = await UserApi.saveUser(refreshToken, spotifyUser.id, spotifyUser.display_name)
+      const newUser = await UserApi.saveUser(
+        refreshToken,
+        accessToken,
+        spotifyUser.id,
+        spotifyUser.display_name
+      )
       uuid = newUser.id
     }
 

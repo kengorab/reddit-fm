@@ -12,6 +12,7 @@ export async function getUsers(): Promise<(User | null)[]> {
 
 export async function saveUser(
   spotifyRefreshToken: string,
+  spotifyAccessToken: string,
   spotifyId: string,
   spotifyDisplayName: string
 ): Promise<User> {
@@ -20,6 +21,7 @@ export async function saveUser(
   const user = {
     id,
     spotifyRefreshToken,
+    spotifyAccessToken,
     spotifyId,
     spotifyDisplayName,
     playlistConfigs: []

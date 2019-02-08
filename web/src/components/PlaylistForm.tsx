@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { FormEvent } from 'react'
 import * as _ from 'lodash'
-import { Button, Form, Input, Select } from 'antd'
+import { Button, Form, Input, Select, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/es/form'
 import musicSubreddits from '../data/music-subreddits'
 import styled from 'styled-components'
 
 interface FormProps extends FormComponentProps {
-  onPreview: () => Promise<void>,
+  onPreview: (subreddits: string[], maxToAdd: number) => Promise<void>,
   onSubmit: (values: PlaylistConfig) => Promise<CreatePlaylistResponse>
 }
 
@@ -16,6 +16,7 @@ interface FormState {
   subreddits: string[],
   invalidSubreddits: string[],
   previewLoading: boolean,
+  previewedSubreddits: string[],
   submitLoading: boolean,
 }
 
@@ -31,6 +32,7 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
       subreddits: [],
       invalidSubreddits: [],
       previewLoading: false,
+      previewedSubreddits: [],
       submitLoading: false
     }
 
@@ -112,12 +114,50 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
 
   private onPreview = async () => {
     this.setState({ previewLoading: true })
-    await this.props.onPreview()
-    this.setState({ previewLoading: false })
+    const fields: any = this.props.form.getFieldsValue(['subreddits', 'maxToAdd'])
+    await this.props.onPreview(fields.subreddits, fields.maxToAdd)
+    this.setState({ previewedSubreddits: fields.subreddits, previewLoading: false })
+  }
+
+  private renderPreviewButton = () => {
+    const subreddits = this.props.form.getFieldValue('subreddits')
+
+    const btnProps = {
+      type: 'ghost' as 'ghost',
+      size: 'large' as 'large',
+      style: { marginRight: 12 },
+      onClick: this.onPreview,
+      loading: this.state.previewLoading
+    }
+
+    if (!subreddits) {
+      return (
+        <Tooltip title="You can't see a preview until you pick some subreddits">
+          <Button {...btnProps} disabled={true}>Preview</Button>
+        </Tooltip>
+      )
+    }
+
+    if (_.isEqual(subreddits, this.state.previewedSubreddits)) {
+      return (
+        <Tooltip title="Add or remove some subreddits to see a different preview">
+          <Button {...btnProps} disabled={true}>Preview</Button>
+        </Tooltip>
+      )
+    }
+
+    return (
+      <Tooltip title="See what types of songs will be added to this playlist">
+        <Button {...btnProps}>Preview</Button>
+      </Tooltip>
+    )
   }
 
   public render() {
     const { getFieldDecorator } = this.props.form
+
+    const subreddits = this.props.form.getFieldValue('subreddits')
+    const createDisabled = !subreddits || !this.props.form.getFieldValue('name')
 
     return (
       <Form onSubmit={this.handleSubmit} layout="vertical" hideRequiredMark={true}>
@@ -182,14 +222,21 @@ export class PlaylistForm extends React.Component<FormProps, FormState> {
           </HalfWidthFormItem>
         </HalfWidthFormItemContainer>
 
-        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
-          {/*<Button type="ghost" size="large" style={{ marginRight: 12 }} onClick={this.onPreview}*/}
-          {/*loading={this.state.previewLoading}>*/}
-          {/*Preview*/}
-          {/*</Button>*/}
-          <Button type="primary" size="large" htmlType="submit" loading={this.state.submitLoading}>
-            Create
-          </Button>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end', marginTop: 24 }}>
+          {this.renderPreviewButton()}
+          <Tooltip
+            title={createDisabled
+              ? `You can't save this playlist until you pick a name and some subreddits`
+              : ''}
+          >
+            <Button
+              type="primary" size="large" htmlType="submit"
+              loading={this.state.submitLoading}
+              disabled={createDisabled}
+            >
+              Create
+            </Button>
+          </Tooltip>
         </div>
       </Form>
     )

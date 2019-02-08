@@ -1,7 +1,8 @@
 import * as React from 'react'
+import styled from 'styled-components'
 import { Icon, Layout, Menu } from 'antd'
-import * as auth from '../data/auth'
 import { History } from 'history'
+import * as auth from '../data/auth'
 
 interface Props {
   user: User | null,
@@ -36,9 +37,26 @@ export default function Header({ user, history }: Props) {
     )
 
   return (
-    <Layout.Header className="hflex-space-betw" style={{ position: 'fixed', width: '100%', zIndex: 2 }}>
+    <LayoutHeader>
       <h2 style={{ margin: 0 }}>Reddit FM</h2>
       {dropdown}
-    </Layout.Header>
+    </LayoutHeader>
   )
 }
+
+const LayoutHeader = styled(Layout.Header)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+  
+  .ant-menu-submenu-title {
+    padding: 0;
+  }
+  
+  @media screen and (max-width: 800px) {
+    padding: 0 24px !important;
+  }
+`
