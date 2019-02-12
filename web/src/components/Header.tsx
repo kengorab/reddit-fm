@@ -3,13 +3,15 @@ import styled from 'styled-components'
 import { Icon, Layout, Menu } from 'antd'
 import { History } from 'history'
 import * as auth from '../data/auth'
+import { Context } from '../contexts/UserContext'
 
 interface Props {
-  user: User | null,
   history: History
 }
 
-export default function Header({ user, history }: Props) {
+export default function Header({ history }: Props) {
+  const { user } = React.useContext(Context)
+
   const dropdown = !user
     ? null
     : (

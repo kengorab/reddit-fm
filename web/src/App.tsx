@@ -8,59 +8,50 @@ import CreatePlaylistScreen from './screens/CreatePlaylistScreen'
 import Header from './components/Header'
 import * as auth from './data/auth'
 import * as UserService from './data/user-service'
+import { Provider, Consumer, UserContext } from './contexts/UserContext'
 
-type State = { user: User | null, loading: boolean }
+type Props = UserContext
+type State = { loading: boolean }
 
-export default class App extends React.Component<{}, State> {
-  constructor(props: any) {
+class App extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props)
-    this.state = { user: null, loading: true }
+    this.state = { loading: true }
   }
 
   async componentDidMount() {
     const user = await UserService.getUser()
-    this.setState({ user, loading: false })
+    this.props.setUser(user!)
+    this.setState({ loading: false })
   }
 
-  private updateUser = (user: User) => this.setState({ user })
-
-  private renderContent = () => {
-    if (this.state.loading) {
-      return (
+  private renderContent = () =>
+    this.state.loading
+      ? (
         <div className="flex-center">
           <Spin indicator={<Icon type="loading" style={{ fontSize: 48 }} spin/>}/>
         </div>
       )
-    }
+      : (
+        <Switch>
+          <Route exact path="/" component={HomeScreen}/>
+          <Route exact path="/playlists/new" component={CreatePlaylistScreen}/>
+        </Switch>
+      )
 
-    return (
-      <Switch>
-        <Route exact path="/" render={() => <HomeScreen user={this.state.user!} onUpdateUser={this.updateUser}/>}/>
-        <Route
-          exact
-          path="/playlists/new"
-          render={(props) => <CreatePlaylistScreen {...props} onUpdateUser={this.updateUser}/>}
-        />
-      </Switch>
-    )
-  }
-
-  private renderIndexRoute = (props: RouteComponentProps) => {
-    if (!auth.isLoggedIn()) {
-      return <WelcomeScreen {...props} />
-    }
-
-    return (
-      <Layout>
-        <Header user={this.state.user} history={props.history}/>
-        <Layout.Content style={{ paddingTop: 64 }}>
-          <main>
-            {this.renderContent()}
-          </main>
-        </Layout.Content>
-      </Layout>
-    )
-  }
+  private renderIndexRoute = (props: RouteComponentProps) =>
+    !auth.isLoggedIn()
+      ? <WelcomeScreen {...props} />
+      : (
+        <Layout>
+          <Header history={props.history}/>
+          <Layout.Content style={{ paddingTop: 64 }}>
+            <main>
+              {this.renderContent()}
+            </main>
+          </Layout.Content>
+        </Layout>
+      )
 
   render() {
     return (
@@ -72,4 +63,18 @@ export default class App extends React.Component<{}, State> {
       </BrowserRouter>
     )
   }
+}
+
+export default function
+
+  Router() {
+  return (
+    <Provider user={null}>
+      <Consumer>
+        {({ user, setUser }: UserContext) =>
+          <App user={user} setUser={setUser}/>
+        }
+      </Consumer>
+    </Provider>
+  )
 }

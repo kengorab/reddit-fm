@@ -5,6 +5,69 @@ import * as UserApi from '../users/user-dao'
 import * as RedditApi from '../reddit/reddit-api'
 import { withCors } from '../utils/cors'
 
+export const user = {
+  'id': 'cd1e657d-570e-4c8c-b015-4e82b064a6b7',
+  'spotifyDisplayName': 'Ken',
+  'spotifyId': '0ra94mq97ohw7pe055iwwlvl7',
+  'spotifyRefreshToken': 'AQBFbU5B6vit3UM0TklFJMbxzhDI26_2Z142XGi-UAvUXG4JTFqwZdGwfOce6m0bEsQxlEAYyUqnJuPL6FcegGfsxKD6qwx75bb8j7kRnNZFlQulyYwuGeaNpm86BygSEqCcgw',
+  'playlistConfigs': [{
+    'subreddits': ['/r/BlackMetal'],
+    'updateInterval': 'weekly',
+    'created': 1548629447479,
+    'lastFetched': 1548629448879,
+    'maxToAdd': 20,
+    'name': 'a',
+    'isPublic': false,
+    'id': 'd1e657d-570e-4c8c-b015-4e82b064a6b7c',
+    'shuffle': true,
+    'enabled': false
+  }, {
+    'subreddits': ['/r/BlackMetal', '/r/deathcore', '/r/deathmetal', '/r/melodicdeathmetal'],
+    'updateInterval': 'daily',
+    'created': 1548629784186,
+    'lastFetched': 1549052737000,
+    'maxToAdd': 20,
+    'name': 'B',
+    'isPublic': false,
+    'id': '1e657d-570e-4c8c-b015-4e82b064a6b7cd',
+    'shuffle': true,
+    'enabled': true
+  }, {
+    'subreddits': ['/r/LofiHipHop'],
+    'updateInterval': 'weekly',
+    'created': 1548630038642,
+    'lastFetched': 1549052737000,
+    'maxToAdd': 20,
+    'name': 'C',
+    'isPublic': false,
+    'id': 'e657d-570e-4c8c-b015-4e82b064a6b7cd1',
+    'shuffle': true,
+    'enabled': true
+  }, {
+    'subreddits': ['/r/classicalmusic'],
+    'updateInterval': 'weekly',
+    'created': 1548630114647,
+    'lastFetched': null,
+    'maxToAdd': 20,
+    'name': 'D',
+    'isPublic': false,
+    'id': '657d-570e-4c8c-b015-4e82b064a6b7cd1e',
+    'shuffle': true,
+    'enabled': false
+  }, {
+    'subreddits': ['/r/underoath'],
+    'updateInterval': 'weekly',
+    'created': 1548632401144,
+    'lastFetched': null,
+    'maxToAdd': 20,
+    'name': 'C',
+    'isPublic': false,
+    'id': '57d-570e-4c8c-b015-4e82b064a6b7cd1e6',
+    'shuffle': true,
+    'enabled': true
+  }]
+}
+
 // GET /users/:userId
 export const getUser: APIGatewayProxyHandler = withCors(async event => {
   const { userId } = event.pathParameters
@@ -15,7 +78,7 @@ export const getUser: APIGatewayProxyHandler = withCors(async event => {
     }
   }
 
-  const user = await UserApi.getUserById(userId)
+  //const user = await UserApi.getUserById(userId)
   if (!user) {
     return {
       statusCode: 404,
@@ -107,7 +170,7 @@ async function handleEnableOrDisable(
     }
   }
 
-  const user = await UserApi.getUserById(userId)
+  //const user = await UserApi.getUserById(userId)
   if (!user) {
     return {
       statusCode: 404,
@@ -131,7 +194,7 @@ async function handleEnableOrDisable(
   }
 
   user.playlistConfigs[playlistIdx].enabled = targetStatus
-  await UserApi.updateUser(user)
+  //await UserApi.updateUser(user)
   return {
     statusCode: 200,
     body: JSON.stringify(user.playlistConfigs[playlistIdx])

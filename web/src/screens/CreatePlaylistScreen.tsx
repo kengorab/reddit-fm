@@ -5,6 +5,7 @@ import { PlaylistForm } from '../components/PlaylistForm'
 import * as UserService from '../data/user-service'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { SongList } from '../components/SongList'
+import { UserContext, Consumer, Context } from '../contexts/UserContext'
 
 const CreatePlaylistForm = Form.create({})(PlaylistForm)
 
@@ -18,7 +19,7 @@ interface State {
   songs: Song[]
 }
 
-export default class CreatePlaylistScreen extends React.Component<Props, State> {
+class CreatePlaylistScreen extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
@@ -65,19 +66,22 @@ export default class CreatePlaylistScreen extends React.Component<Props, State> 
   render() {
     return (
       <div>
-        <Breadcrumbs
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Create New Playlist', href: '/playlists/new' }
-          ]}
-        />
+        <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Create New Playlist', href: '/playlists/new' }]}/>
 
         <h1>Create New Playlist</h1>
-
         <CreatePlaylistForm onPreview={this.onPreview} onSubmit={this.onSubmit}/>
-
         {this.state.showPreview && this.renderPreview()}
       </div>
     )
   }
+}
+
+export default function (props: RouteComponentProps) {
+  return (
+    <Consumer>
+      {({ setUser }: UserContext) =>
+        <CreatePlaylistScreen onUpdateUser={setUser} {...props}/>
+      }
+    </Consumer>
+  )
 }

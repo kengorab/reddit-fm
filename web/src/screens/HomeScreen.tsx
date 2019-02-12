@@ -4,14 +4,12 @@ import styled from 'styled-components'
 import { ZoomingButtonLink } from '../components/ZoomingButtonLink'
 import { Breadcrumbs } from '../components/Breadcrumbs'
 import { PlaylistItem } from '../components/PlaylistItem'
+import { Context } from '../contexts/UserContext'
 
-type Props = {
-  user: User
-  onUpdateUser: (user: User) => void
-}
+export default function HomeScreen() {
+  const { user, setUser } = React.useContext(Context)
 
-export default function HomeScreen(props: Props) {
-  const isEmpty = props.user.playlistConfigs.length === 0
+  const isEmpty = user!.playlistConfigs.length === 0
 
   return (
     <>
@@ -31,15 +29,15 @@ export default function HomeScreen(props: Props) {
       )}
 
       <PlaylistGrid>
-        {props.user.playlistConfigs.map(playlistConfig =>
+        {user!.playlistConfigs.map((playlistConfig: PlaylistConfig) =>
           <PlaylistItem
             key={playlistConfig.id}
             playlist={playlistConfig}
             onChangeStatus={(playlist) => {
-              const idx = props.user.playlistConfigs
-                .findIndex(({ id }) => id === playlist.id)
-              props.user.playlistConfigs[idx] = playlist
-              props.onUpdateUser(props.user)
+              const idx = user!.playlistConfigs
+                .findIndex(({ id }: PlaylistConfig) => id === playlist.id)
+              user!.playlistConfigs[idx] = playlist
+              setUser(user)
             }}
           />
         )}
