@@ -87,7 +87,6 @@ const PlaylistItemContainer = styled.div`
   border: 2px solid ${({ enabled }: any) => enabled ? '#1DA57A' : 'gray'};
   border-radius: 6px;
   background-color: #030607;
-  cursor: ${({ enabled }: any) => enabled ? 'pointer' : ''};
   transition: all 200ms;
   
   &:hover {
