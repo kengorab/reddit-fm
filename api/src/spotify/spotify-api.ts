@@ -58,10 +58,19 @@ export class SpotifyApi {
     return res.json()
   }
 
-  async getPlaylists(): Promise<PlaylistsResponse> {
-    const url = `${this.baseUrl}/v1/me/playlists`
+  async getPlaylist(playlistId: string): Promise<Playlist | null> {
+    const url = `${this.baseUrl}/v1/playlists/${playlistId}`
     const res = await fetch(url, { headers: this.headers })
-    return res.json()
+    if (!res.ok) {
+      throw new Error(`No playlist for id ${playlistId}`)
+    }
+    try {
+      return res.json()
+    } catch (e) {
+      console.error(e)
+      console.log(await res.text())
+      return null
+    }
   }
 
   async getPlaylistTracks(playlist: Playlist): Promise<Track[]> {
@@ -75,7 +84,7 @@ export class SpotifyApi {
     const uris = songUris.join(',')
     const url = `${this.baseUrl}/v1/playlists/${playlist.id}/tracks?uris=${uris}`
     const res = await fetch(url, { method: 'POST', headers: this.headers })
-    console.log(await res.json())
+    console.log(await res.text())
   }
 
   async createPlaylist(name: string, description: string, isPublic: boolean): Promise<Playlist> {

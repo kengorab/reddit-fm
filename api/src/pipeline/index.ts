@@ -27,7 +27,6 @@ interface Song {
 
 export class Pipeline {
   private readonly spotifyApi: SpotifyApi
-  private readonly userPlaylistsPromise: Promise<PlaylistsResponse>
   private readonly initializePromise: Promise<void>
 
   constructor(private user: User) {
@@ -38,8 +37,6 @@ export class Pipeline {
           await UserApi.updateUser({ ...user, spotifyAccessToken: accessToken })
         }
       })
-    this.userPlaylistsPromise = this.initializePromise
-      .then(() => this.spotifyApi.getPlaylists())
   }
 
   private getSongsForSubreddit = async (subreddit: string): Promise<Song[]> => {
@@ -75,16 +72,22 @@ export class Pipeline {
   }
 
   private addToSpotifyPlaylist = async (config: PlaylistConfig, songs: Song[]) => {
-    const playlists = await this.userPlaylistsPromise
-    let playlist = playlists.items.find(playlist => playlist.name === config.name)
-    let createdPlaylist = false
+    let createdPlaylistId = null
+    let playlist: Playlist
+    if (config.spotifyId) {
+      try {
+        playlist = await this.spotifyApi.getPlaylist(config.spotifyId)
+      } catch (e) {
+        console.log('Error getting playlist:', e)
+      }
+    }
     if (!playlist) {
       playlist = await this.spotifyApi.createPlaylist(
         config.name,
         getPlaylistDescription(config),
         config.isPublic || false
       )
-      createdPlaylist = true
+      createdPlaylistId = playlist.id
     }
     const playlistTracks = await this.spotifyApi.getPlaylistTracks(playlist)
     const existingUris = playlistTracks.map(track => track.uri)
@@ -92,10 +95,13 @@ export class Pipeline {
     const uris = songs
       .map(song => song.uri)
       .filter(uri => !existingUris.includes(uri))
-    await this.spotifyApi.addSongsToPlaylist(playlist, uris)
+    if (uris.length !== 0) {
+      await this.spotifyApi.addSongsToPlaylist(playlist, uris)
+    }
+
     return {
       config,
-      createdPlaylist,
+      createdPlaylistId,
       numAdded: uris.length
     }
   }
@@ -127,11 +133,14 @@ export class Pipeline {
     this.user.playlistConfigs.find(({ id }) => id === playlist.id)
       .lastFetched = now
     playlist.lastFetched = now
+    if (result.createdPlaylistId) {
+      playlist.spotifyId = result.createdPlaylistId
+    }
     await UserApi.updateUser(this.user)
 
     return {
       config: playlist,
-      created: result.createdPlaylist ? [playlist.name] : [],
+      created: result.createdPlaylistId ? [playlist.name] : [],
       totalAdded: result.numAdded
     }
   }

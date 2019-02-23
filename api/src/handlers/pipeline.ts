@@ -99,7 +99,7 @@ export const runPipelineForPlaylist: APIGatewayProxyHandler = withCors(async eve
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ results })
+      body: JSON.stringify(results)
     }
   } catch (e) {
     console.error(e)

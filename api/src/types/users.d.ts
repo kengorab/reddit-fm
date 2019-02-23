@@ -2,6 +2,7 @@ type Interval = 'daily' | 'weekly'
 
 interface PlaylistConfig {
   id?: string,
+  spotifyId?: string,
   name: string,
   subreddits: string[],
   updateInterval: Interval,
