@@ -60,3 +60,52 @@ export const getSongsForPlaylist: APIGatewayProxyHandler = withCors(async event 
     }
   }
 })
+
+// POST /users/:userId/playlists/:playlistId/songs/updates
+export const runPipelineForPlaylist: APIGatewayProxyHandler = withCors(async event => {
+  try {
+    const { userId, playlistId } = event.pathParameters
+    if (!userId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Missing required path param: uuid' })
+      }
+    }
+    if (!playlistId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Missing required path param: playlistId' })
+      }
+    }
+    const user = await UserApi.getUserById(userId)
+    if (!user) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: `No user present with id ${userId}` })
+      }
+    }
+
+    const playlist = user.playlistConfigs
+      .find(playlistConfig => playlistConfig.id === playlistId)
+    if (!playlist) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: `No playlist present with id ${playlistId} for user ${userId}` })
+      }
+    }
+
+    const pipeline = new Pipeline(user as User)
+    const results = await pipeline.runForPlaylist(playlist)
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ results })
+    }
+  } catch (e) {
+    console.error(e)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: e.toString() })
+    }
+  }
+})

@@ -89,6 +89,18 @@ functions:
             querystrings:
               subreddits: true
               maxToAdd: true
+  run-pipeline-for-playlist:
+    handler: src/handlers/pipeline.runPipelineForPlaylist
+    events:
+      - http:
+          cors: true
+          method: post
+          path: users/{userId}/playlists/{playlistId}/songs/updates
+          request:
+            parameters:
+              paths:
+                userId: true
+                playlistId: true
   spotify-login:
     handler: src/handlers/auth.spotifyLogin
     events:

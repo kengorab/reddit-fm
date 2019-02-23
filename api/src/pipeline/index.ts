@@ -4,6 +4,12 @@ import { getYoutubeVideos } from '../reddit/reddit-manager'
 import * as RedditApi from '../reddit/reddit-api'
 import * as UserApi from '../users/user-dao'
 
+interface SingleResult {
+  config: PlaylistConfig,
+  created: string[],
+  totalAdded: number,
+}
+
 interface Result {
   created: string[],
   totalAdded: number,
@@ -109,23 +115,37 @@ export class Pipeline {
     return shuffleSongs ? shuffle(maxAllowableSongs) : maxAllowableSongs
   }
 
+  public async runForPlaylist(playlist: PlaylistConfig): Promise<SingleResult> {
+    const songs = await this.getSongsForPlaylist(
+      playlist.subreddits,
+      playlist.maxToAdd,
+      playlist.shuffle
+    )
+    const result = await this.addToSpotifyPlaylist(playlist, songs)
+
+    const now = Date.now()
+    this.user.playlistConfigs.find(({ id }) => id === playlist.id)
+      .lastFetched = now
+    playlist.lastFetched = now
+    await UserApi.updateUser(this.user)
+
+    return {
+      config: playlist,
+      created: result.createdPlaylist ? [playlist.name] : [],
+      totalAdded: result.numAdded
+    }
+  }
+
   public async run(): Promise<Result> {
     const playlistsPromises = this.user.playlistConfigs
       .filter(shouldProcessPlaylistConfig)
-      .map(async config => {
-        const songs = await this.getSongsForPlaylist(
-          config.subreddits,
-          config.maxToAdd,
-          config.shuffle
-        )
-        return await this.addToSpotifyPlaylist(config, songs)
-      })
+      .map(this.runForPlaylist)
 
     const results = await Promise.all(playlistsPromises)
     return results.reduce(
-      (acc, { config, createdPlaylist, numAdded }) => ({
-        created: createdPlaylist ? acc.created.concat(config.name) : acc.created,
-        totalAdded: acc.totalAdded + numAdded
+      (acc, { created, totalAdded }) => ({
+        created: acc.created.concat(created),
+        totalAdded: acc.totalAdded + totalAdded
       }),
       {
         created: [],

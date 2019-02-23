@@ -12,6 +12,13 @@ export default function HomeScreen() {
 
   const isEmpty = user!.playlistConfigs.length === 0
 
+  const updatePlaylistForUser = (playlist: PlaylistConfig) => {
+    const idx = user!.playlistConfigs
+      .findIndex(({ id }: PlaylistConfig) => id === playlist.id)
+    user!.playlistConfigs[idx] = playlist
+    setUser(user)
+  }
+
   return (
     <>
       <Breadcrumbs items={[{ label: 'Home', href: '/' }]}/>
@@ -34,12 +41,8 @@ export default function HomeScreen() {
           <PlaylistItem
             key={playlistConfig.id}
             playlist={playlistConfig}
-            onChangeStatus={(playlist) => {
-              const idx = user!.playlistConfigs
-                .findIndex(({ id }: PlaylistConfig) => id === playlist.id)
-              user!.playlistConfigs[idx] = playlist
-              setUser(user)
-            }}
+            onChangeStatus={updatePlaylistForUser}
+            onUpdate={updatePlaylistForUser}
           />
         )}
         {!isEmpty && (

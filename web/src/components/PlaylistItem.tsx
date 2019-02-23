@@ -1,34 +1,49 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
-import { Switch, Tag } from 'antd'
+import { Icon, Spin, Switch, Tag } from 'antd'
 import * as UserService from '../data/user-service'
+import * as PipelineService from '../data/pipeline-service'
 
 interface Props {
-  playlist: PlaylistConfig
-  onChangeStatus: (playlist: PlaylistConfig) => void
+  playlist: PlaylistConfig,
+  onChangeStatus: (playlist: PlaylistConfig) => void,
+  onUpdate: (playlist: PlaylistConfig) => void
 }
 
 interface State {
-  statusChangeLoading: boolean
+  statusChangeLoading: boolean,
+  updateLoading: boolean,
 }
 
 export class PlaylistItem extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    this.state = { statusChangeLoading: false }
+    this.state = { statusChangeLoading: false, updateLoading: false }
   }
 
-  toggleEnabled = async (playlistId: string, enabled: boolean) => {
+  toggleEnabled = async (enabled: boolean) => {
     this.setState({ statusChangeLoading: true })
-    const updatedPlaylist = await UserService.setPlaylistStatus(playlistId, enabled)
+    const updatedPlaylist = await UserService.setPlaylistStatus(this.props.playlist.id!, enabled)
     this.props.onChangeStatus(updatedPlaylist)
     this.setState({ statusChangeLoading: false })
   }
 
+  triggerManualUpdate = async () => {
+    this.setState({ updateLoading: true })
+    const result = await PipelineService.triggerManualUpdate(this.props.playlist)
+    this.props.onUpdate(result.config)
+    this.setState({ updateLoading: false })
+  }
+
   renderNextRun = (playlist: PlaylistConfig) => {
     const { lastFetched, updateInterval, enabled } = playlist
+
+    const updateNow = this.state.updateLoading
+      ? <Spin style={{ fontSize: 10 }} indicator={<Icon type="loading" style={{ fontSize: 14 }} spin/>}/>
+      : <a onClick={this.triggerManualUpdate}>Update Now</a>
+
     if (lastFetched) {
       const lastFetchedMessage: string = (dayjs(lastFetched) as any).fromNow()
       const nextUpdate = dayjs(lastFetched)
@@ -40,12 +55,16 @@ export class PlaylistItem extends React.Component<Props, State> {
       return <>
         <span>Last updated {lastFetchedMessage}</span>
         {enabled
-          ? <span>Next {updateInterval} update will be {nextUpdateMessage}</span>
+          ? (
+            <span>
+              Next {updateInterval} update will be {nextUpdateMessage}. {updateNow}
+            </span>
+          )
           : <span>Enable this playlist to resume auto-updates</span>
         }
       </>
     } else if (enabled) {
-      return <span>This playlist's first auto-update should be happening soon!</span>
+      return <span>This playlist's first auto-update should be happening soon! {updateNow}</span>
     } else {
       return <span>Enable this playlist to resume auto-updates</span>
     }
@@ -62,7 +81,7 @@ export class PlaylistItem extends React.Component<Props, State> {
             <Switch
               checked={playlist.enabled}
               loading={this.state.statusChangeLoading}
-              onChange={(enabled) => this.toggleEnabled(playlist.id!, enabled)}
+              onChange={this.toggleEnabled}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', fontSize: 12 }}>
@@ -95,7 +114,7 @@ const PlaylistItemContainer = styled.div`
   
   .ant-tag {
     cursor: default;
-    ${({ enabled }: any) => !enabled && 'background-color: gray' }
+    ${({ enabled }: any) => !enabled && 'background-color: gray'}
     
     &:hover {
       opacity: 1;
