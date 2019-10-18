@@ -1,15 +1,15 @@
 service:
   name: reddit-fm
 
-# Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-dotenv-plugin
+  - serverless-prune-plugin
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: ${opt:stage, 'dev'}
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
@@ -134,3 +134,7 @@ resources:
 custom:
   serverless-offline:
     port: 4000
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
